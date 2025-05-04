@@ -1,0 +1,84 @@
+// build.gradle
+
+plugins {
+    id 'java'
+    id 'idea'
+    id 'net.serenity-bdd.serenity-gradle-plugin' version '4.0.1' // Serenity BDD Gradle plugin
+}
+
+def serenityVersion = '4.0.1'
+def restAssuredVersion = '5.3.0'
+def junitVersion = '5.9.2'
+def cucumberVersion = '7.11.1'
+def slf4jVersion = '2.0.7'
+def logbackVersion = '1.4.7'
+
+repositories {
+    mavenCentral()
+}
+
+// Define source compatibility for Java
+sourceCompatibility = 11
+targetCompatibility = 11
+
+// Define dependencies for the project
+dependencies {
+    // Serenity BDD Core and Cucumber integration
+    implementation "net.serenity-bdd:serenity-core:${serenityVersion}"
+    implementation "net.serenity-bdd:serenity-rest-assured:${serenityVersion}"
+    implementation "net.serenity-bdd:serenity-cucumber:${serenityVersion}"
+    implementation "net.serenity-bdd:serenity-screenplay:${serenityVersion}"
+    implementation "net.serenity-bdd:serenity-screenplay-rest:${serenityVersion}"
+
+    // REST Assured for API testing
+    implementation "io.rest-assured:rest-assured:${restAssuredVersion}"
+
+    // JUnit 5 for test execution
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+
+    // Cucumber for BDD
+    implementation "io.cucumber:cucumber-java:${cucumberVersion}"
+    implementation "io.cucumber:cucumber-junit:${cucumberVersion}"
+
+    // Logging framework (SLF4J API + Logback implementation)
+    implementation "org.slf4j:slf4j-api:${slf4jVersion}"
+    implementation "ch.qos.logback:logback-classic:${logbackVersion}"
+
+    // AssertJ for fluent assertions
+    testImplementation 'org.assertj:assertj-core:3.24.2'
+
+    // Jackson for JSON processing (often needed with REST Assured/Serenity)
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.0'
+}
+
+// Configure the Serenity BDD plugin
+serenity {
+    // Specify the test root package for Serenity reports
+    testRoot = 'com.natwest.automation.runners'
+    // Specify the requirements base directory (where features are located)
+    requirementsBaseDir = 'src/test/resources/features'
+}
+
+// Configure the test task
+test {
+    // Ensure tests run even if previous tests fail
+    failFast = false
+    // Show standard output and error streams
+    testLogging {
+        showStandardStreams = true
+        events "passed", "skipped", "failed"
+        exceptionFormat "short"
+    }
+    // Set system properties if needed, e.g., for base URL
+    systemProperty 'serenity.base.url', System.getProperty('serenity.base.url', 'https://api.restful-api.dev')
+}
+
+// Configure Gradle wrapper (recommended for consistent builds)
+wrapper {
+    gradleVersion = '8.1.1' // Specify a recent Gradle version
+}
+
+// Task to aggregate Serenity reports
+gradle.startParameter.continueOnFailure = true
+
