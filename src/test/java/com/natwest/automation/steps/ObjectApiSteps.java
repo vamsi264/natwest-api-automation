@@ -149,7 +149,6 @@ public class ObjectApiSteps {
         createdObjectId = response.jsonPath().getString("id");
         assertNotNull("Created object ID should not be null", createdObjectId);
         logger.info("Stored created object ID: {}", createdObjectId);
-        // Store in context if using map: scenarioContext.put("createdObjectId", createdObjectId);
     }
 
     // --- Steps for GET, LIST, DELETE and Edge Cases ---
@@ -162,7 +161,6 @@ public class ObjectApiSteps {
     public void aNewObjectIsCreatedWithName(String name) {
         theAPIBaseURLIsConfigured(); // Ensure base setup
         iHaveTheDetailsForANewObjectNamed(name);
-        // Add some default data for creation if needed by the API
         theObjectHasCPUModel("Default CPU");
         theObjectHasAPriceOf(99.99);
         iSendAPOSTRequestToCreateTheObject();
@@ -267,7 +265,6 @@ public class ObjectApiSteps {
     public void iAttemptToSendAGETRequestForTheDeletedObjectID() {
         assertNotNull("Stored object ID must not be null for GET-after-DELETE check", objectIdToDeleteOrGet);
         logger.info("Attempting GET request for deleted ID: /objects/{}", objectIdToDeleteOrGet);
-        // Use a separate request specification or reset the main one if needed
         response = SerenityRest.given()
                 .baseUri(baseUrl)
                 .contentType("application/json") // Ensure content type if needed
@@ -295,8 +292,8 @@ public class ObjectApiSteps {
         theAPIBaseURLIsConfigured(); // Ensure base setup
         objectPayload = new ObjectData(); // Create a fresh payload
         objectPayload.setName(name);
-        // Intentionally leave the 'data' field null or empty
-        objectPayload.setData(null); // Or new ObjectData.Data() with null fields
+        // Leaving intentionally the 'data' field null or empty
+        objectPayload.setData(null); // null fields
         logger.info("Setting up incomplete object payload with name: {}", name);
     }
 
