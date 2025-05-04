@@ -101,3 +101,5 @@ The test suite covers the following scenarios defined in `src/test/resources/fea
 
 ## Report Highlight
 ![screenshot.png](screenshot.png)
+
+Copyright © 2025 Vamshi Sunchu
