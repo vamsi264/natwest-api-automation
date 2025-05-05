@@ -2,6 +2,7 @@
 package com.natwest.automation.steps;
 
 import com.natwest.automation.model.ObjectData;
+import com.natwest.automation.utils.JsonUtils;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -39,12 +40,12 @@ public class ObjectApiSteps {
     public void theAPIBaseURLIsConfigured() {
         baseUrl = System.getProperty("serenity.base.url", "https://api.restful-api.dev");
         logger.info("API Base URL configured: {}", baseUrl);
-        // Initialize request specification for subsequent steps
+        // Initializing request specification for subsequent steps
         request = SerenityRest.given()
                 .baseUri(baseUrl)
                 .contentType("application/json");
-        objectPayload = new ObjectData(); // Initialize payload object
-        objectPayload.setData(new ObjectData.Data()); // Initialize nested data object
+        objectPayload = new ObjectData(); // Initializing payload object
+        objectPayload.setData(new ObjectData.Data()); // Initializing nested data object
     }
 
     /**
@@ -114,21 +115,74 @@ public class ObjectApiSteps {
     public void theResponseShouldContainTheDetailsOfTheCreatedObject() {
         logger.info("Validating response body contains created object details.");
         response.then()
-                .body("id", notNullValue()) // Check that an ID is generated
+                .body("id", notNullValue()) // Checking that an ID is generated
                 .body("name", equalTo(objectPayload.getName()))
-                .body("createdAt", notNullValue()); // Check that createdAt timestamp exists
-        // Optionally validate nested data fields if they are consistently returned
+                .body("createdAt", notNullValue()); // Checking that createdAt timestamp exists
+        // Optionally validating nested data fields if they are consistently returned
         if (objectPayload.getData() != null) {
             if (objectPayload.getData().getCpuModel() != null) {
                 response.then().body("data.\"CPU model\"", equalTo(objectPayload.getData().getCpuModel()));
             }
             if (objectPayload.getData().getPrice() != null) {
-                // Handle potential floating point comparison issues if necessary
+                // Handled potential floating point comparison issues
                 response.then().body("data.price", equalTo(objectPayload.getData().getPrice().floatValue()));
             }
             if (objectPayload.getData().getCapacity() != null) {
                 response.then().body("data.capacity", equalTo(objectPayload.getData().getCapacity()));
             }
+        }
+    }
+
+    /**
+     * Loads the object details from a specified JSON file using JsonUtils.
+     * The loaded data is stored in the objectPayload variable.
+     */
+    @Given("I load the object details from the JSON file {string}")
+    public void iLoadTheObjectDetailsFromTheJSONFile(String jsonFilePath) {
+        logger.info("Loading object payload from JSON file: {}", jsonFilePath);
+        objectPayload = JsonUtils.readJsonFileAsObject(jsonFilePath, ObjectData.class);
+        assertNotNull("Failed to load object payload from JSON file: " + jsonFilePath, objectPayload);
+        logger.debug("Loaded payload: Name={}, Data={}", objectPayload.getName(), objectPayload.getData());
+    }
+
+    /**
+     * Verifies that the response body contains the details of the created object,
+     * comparing against the data loaded from the JSON file (stored in objectPayload).
+     * Uses Hamcrest matchers for validation.
+     */
+    @Then("the response should contain the details of the created object from the JSON file")
+    public void theResponseShouldContainTheDetailsOfTheCreatedObjectFromJsonFile() {
+        logger.info("Validating response body contains created object details based on JSON payload.");
+        assertNotNull("Object payload loaded from JSON should not be null for validation", objectPayload);
+
+        response.then()
+                .body("id", notNullValue()) // Checking that an ID is generated
+                .body("name", equalTo(objectPayload.getName()))
+                .body("createdAt", notNullValue()); // Checking that createdAt timestamp exists
+
+        // Validated nested data fields based on the JSON payload
+        if (objectPayload.getData() != null) {
+            ObjectData.Data expectedData = objectPayload.getData();
+            if (expectedData.getYear() != null) {
+                response.then().body("data.year", equalTo(expectedData.getYear()));
+            }
+            if (expectedData.getPrice() != null) {
+                // Used floatValue() for comparison due to potential JSON number representation
+                response.then().body("data.price", equalTo(expectedData.getPrice().floatValue()));
+            }
+            if (expectedData.getCpuModel() != null) {
+                response.then().body("data.\"CPU model\"", equalTo(expectedData.getCpuModel()));
+            }
+            if (expectedData.getHardDiskSize() != null) {
+                response.then().body("data.\"Hard disk size\"", equalTo(expectedData.getHardDiskSize()));
+            }
+            // Added a validation for other fields if present in JSON and expected in response
+            if (expectedData.getCapacity() != null) {
+                response.then().body("data.capacity", equalTo(expectedData.getCapacity()));
+            }
+        } else {
+            // If the JSON payload had no 'data' field, assert it's null or absent in response if applicable
+            logger.warn("No 'data' field in the loaded JSON payload to validate against response.");
         }
     }
 
@@ -189,8 +243,8 @@ public class ObjectApiSteps {
     public void theResponseShouldContainTheDetailsOfTheRetrievedObject() {
         logger.info("Validating response body contains retrieved object details.");
         response.then()
-                .body("id", equalTo(objectIdToDeleteOrGet)) // Verify the ID matches
-                .body("name", notNullValue()); // Check name exists
+                .body("id", equalTo(objectIdToDeleteOrGet)) // Verifying the ID matches
+                .body("name", notNullValue()); // Checking name exists
     }
 
     /**
@@ -220,7 +274,7 @@ public class ObjectApiSteps {
     @Then("the response list should not be empty")
     public void theResponseListShouldNotBeEmpty() {
         logger.info("Validating response list is not empty.");
-        response.then().body("$.size()", greaterThan(0)); // Check if the list has elements
+        response.then().body("$.size()", greaterThan(0)); // Checking if the list has elements
     }
 
     /**
@@ -266,7 +320,7 @@ public class ObjectApiSteps {
         logger.info("Attempting GET request for deleted ID: /objects/{}", objectIdToDeleteOrGet);
         response = SerenityRest.given()
                 .baseUri(baseUrl)
-                .contentType("application/json") // Ensure content type if needed
+                .contentType("application/json") // Ensured content type if needed
                 .when()
                 .get("/objects/{id}", objectIdToDeleteOrGet);
         logger.info("Received response for GET after DELETE: {}", response.getBody().asString());
@@ -288,7 +342,7 @@ public class ObjectApiSteps {
      */
     @Given("I have the details for a new object with only the name {string}")
     public void iHaveTheDetailsForANewObjectWithOnlyTheName(String name) {
-        objectPayload = new ObjectData(); // Create a fresh payload
+        objectPayload = new ObjectData(); // Creating a fresh payload
         objectPayload.setName(name);
         // Leaving intentionally the 'data' field null or empty
         objectPayload.setData(null); // null fields
@@ -302,7 +356,7 @@ public class ObjectApiSteps {
     public void aNonExistentObjectID(String invalidId) {
         objectIdToDeleteOrGet = invalidId;
         logger.info("Using non-existent ID for test: {}", invalidId);
-        theAPIBaseURLIsConfigured(); // Ensure base setup for the request
+        theAPIBaseURLIsConfigured(); // Ensured base setup for the request
     }
 
     /**

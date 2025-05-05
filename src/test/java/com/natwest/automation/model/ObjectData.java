@@ -16,6 +16,7 @@ public class ObjectData {
     private String name;
     private Data data;
 
+
     // Default constructor
     public ObjectData() {
     }
@@ -42,17 +43,26 @@ public class ObjectData {
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class Data {
+        private Integer year;
         private Double price;
         @JsonProperty("CPU model") // Maps the JSON key "CPU model" to this field
         private String cpuModel;
         // Added capacity based on the first scenario, assuming it might be part of 'data'
         private String capacity;
-
+        @JsonProperty("Hard disk size") // Maps the JSON key "Hard disk size" to this field
+        private String hardDiskSize;
 
         // Default constructor
         public Data() {
         }
 
+        public Integer getYear() {
+            return year;
+        }
+
+        public void setYear(Integer year) {
+            this.year = year;
+        }
         public Double getPrice() {
             return price;
         }
@@ -67,6 +77,14 @@ public class ObjectData {
 
         public void setCpuModel(String cpuModel) {
             this.cpuModel = cpuModel;
+        }
+
+        public String getHardDiskSize() {
+            return hardDiskSize;
+        }
+
+        public void setHardDiskSize(String hardDiskSize) {
+            this.hardDiskSize = hardDiskSize;
         }
 
         public String getCapacity() {

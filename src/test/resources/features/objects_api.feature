@@ -9,7 +9,7 @@ Feature: Objects API CRUD Operations
   Background:
     Given the API base URL is configured
 
-  @PostObject @Positive
+  @PostObject @Positive @PojoPayload
   Scenario: Verify a new object can be created successfully
     Given I have the details for a new object named "Apple MacBook Pro 16"
     And the object has "Intel Core i9" CPU model
@@ -19,6 +19,15 @@ Feature: Objects API CRUD Operations
     Then the response status code should be 200
     And the response should contain the details of the created object
     And the created object name should be "Apple MacBook Pro 16"
+    And the created object ID should be stored
+
+  @CreateObject @Positive @JsonPayload
+  Scenario: Verify a new object can be created successfully using JSON file payload
+    Given I load the object details from the JSON file "payloads/new_object.json"
+    When I send a POST request to create the object
+    Then the response status code should be 200
+    And the response should contain the details of the created object from the JSON file
+    And the created object name should be "Apple Vision Pro"
     And the created object ID should be stored
 
   @GetObject @Positive
