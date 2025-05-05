@@ -26,7 +26,8 @@ project-root/
 │       │               └── utils/       # Utility/helper classes (if any)
 │       └── resources/
 │           ├── features/                # Cucumber feature files (e.g., objects_api.feature)
-│           └── serenity.properties      # Serenity BDD configuration
+│           ├── serenity.properties      # Serenity BDD configuration
+│           └── logback-test.xml/        # Hiding debug logs from console
 ├── .gitignore                        # Git ignore file
 ├── build.gradle                      # Gradle build script
 ├── gradlew                           # Gradle wrapper script (Linux/macOS)
@@ -72,7 +73,8 @@ The test suite covers the following scenarios defined in `src/test/resources/fea
 1.  **Unzip the Project:** Extract the contents of the `natwest-api-automation.zip` file to a location on your computer.
 2.  **Open Terminal/Command Prompt:** Navigate into the root directory of the extracted project (`natwest-api-automation`).
 3.  **Run Tests using Gradle Wrapper:**
-    *   On Linux/macOS: Execute `./gradlew clean test`
+    *   On Linux/macOS: Execute `./gradlew clean test` or 
+    `./gradlew clean test aggregate -Dcucumber.filter.tags="@Positive and not @Negative" --no-daemon`
     *   On Windows: Execute `gradlew.bat clean test`
 
     *Explanation:*

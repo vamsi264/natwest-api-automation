@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
         features = "src/test/resources/features", // Location of the feature files
         glue = "com.natwest.automation.steps",    // Package containing step definition classes
-        tags = "not @Ignore",                     // Execute scenarios that are not tagged with @Ignore
+//        tags = System.getProperty("tags"),                     // Execute scenarios that are not tagged with @Ignore
         plugin = {"pretty",                       // Pretty print console output
                   "html:target/cucumber-reports/cucumber-html-report.html", // Basic HTML report
                   "json:target/cucumber-reports/cucumber.json",           // JSON report for other tools

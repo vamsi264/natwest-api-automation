@@ -60,6 +60,15 @@ serenity {
     requirementsBaseDir = 'src/test/resources/features'
 }
 
+serenity {
+    outputDirectory = "${projectDir}/target/site/serenity"
+}
+
+test {
+    systemProperty 'cucumber.filter.tags', System.getProperty('cucumber.filter.tags')
+}
+
+
 // Configure the test task
 test {
     // Ensure tests run even if previous tests fail

@@ -159,7 +159,6 @@ public class ObjectApiSteps {
      */
     @Given("a new object is created with name {string}")
     public void aNewObjectIsCreatedWithName(String name) {
-        theAPIBaseURLIsConfigured(); // Ensure base setup
         iHaveTheDetailsForANewObjectNamed(name);
         theObjectHasCPUModel("Default CPU");
         theObjectHasAPriceOf(99.99);
@@ -289,7 +288,6 @@ public class ObjectApiSteps {
      */
     @Given("I have the details for a new object with only the name {string}")
     public void iHaveTheDetailsForANewObjectWithOnlyTheName(String name) {
-        theAPIBaseURLIsConfigured(); // Ensure base setup
         objectPayload = new ObjectData(); // Create a fresh payload
         objectPayload.setName(name);
         // Leaving intentionally the 'data' field null or empty
